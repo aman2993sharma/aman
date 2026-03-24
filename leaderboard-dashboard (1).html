@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>March Mahamukabala Leaderboard</title>
+<style>
+:root{
+  --black:#0B0B0B;--card:#141414;--card2:#1a1a1a;
+  --green:#00FF88;--green2:#00cc6a;--gold:#FFD700;--gold2:#FFA500;
+  --silver:#C0C0C0;--bronze:#CD7F32;--text:#f0f0f0;--muted:#888;
+  --border:rgba(255,255,255,0.07);--font:Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--black);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden;}
+
+#particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+.particle{position:absolute;border-radius:50%;animation:floatP linear infinite;opacity:0;}
+@keyframes floatP{0%{transform:translateY(100vh) scale(0);opacity:0;}10%{opacity:1;}90%{opacity:.4;}100%{transform:translateY(-10vh) scale(1.2);opacity:0;}}
+
+.container{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:0 20px;}
+
+.hero{text-align:center;padding:68px 20px 48px;position:relative;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,255,136,.08) 0%,transparent 70%);pointer-events:none;}
+.trophy-icon{font-size:66px;display:inline-block;animation:tPulse 2s ease-in-out infinite;filter:drop-shadow(0 0 28px var(--gold)) drop-shadow(0 0 56px rgba(255,215,0,.4));margin-bottom:12px;}
+@keyframes tPulse{0%,100%{transform:scale(1) rotate(-3deg);}50%{transform:scale(1.08) rotate(3deg);}}
+.hero h1{font-family:var(--font);font-size:clamp(24px,5vw,50px);font-weight:900;background:linear-gradient(135deg,var(--gold) 0%,#fff 50%,var(--green) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.15;}
+.hero p{font-size:clamp(12px,2vw,15px);color:var(--muted);letter-spacing:3px;text-transform:uppercase;}
+.hero-line{width:110px;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent);margin:18px auto 0;}
+
+.stats-section{padding:32px 0 14px;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 17px;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;cursor:default;}
+.stat-card::before{content:'';position:absolute;inset:0;border-radius:14px;opacity:0;transition:opacity .3s;}
+.stat-card:hover{transform:translateY(-4px);}
+.stat-card.gn::before{background:radial-gradient(circle at 50% 0%,rgba(0,255,136,.12),transparent 70%);}
+.stat-card.gd::before{background:radial-gradient(circle at 50% 0%,rgba(255,215,0,.12),transparent 70%);}
+.stat-card:hover::before{opacity:1;}
+.stat-card:hover.gn{box-shadow:0 0 26px rgba(0,255,136,.2),0 8px 26px rgba(0,0,0,.4);}
+.stat-card:hover.gd{box-shadow:0 0 26px rgba(255,215,0,.2),0 8px 26px rgba(0,0,0,.4);}
+.bt-gn{border-top:2px solid var(--green);}
+.bt-gd{border-top:2px solid var(--gold);}
+.stat-icon{font-size:24px;margin-bottom:7px;}
+.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:4px;}
+.stat-value{font-size:25px;font-weight:900;}
+.sv-gn{color:var(--green);}
+.sv-gd{color:var(--gold);}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:26px 0 12px;}
+.search-wrap{position:relative;flex:1;min-width:190px;}
+.search-wrap input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 13px 10px 40px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;transition:border .3s,box-shadow .3s;}
+.search-wrap input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,255,136,.1);}
+.search-wrap input::placeholder{color:var(--muted);}
+.s-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;}
+.filter-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.filter-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 15px;color:var(--muted);font-family:var(--font);font-size:12px;cursor:pointer;transition:all .2s;white-space:nowrap;font-weight:700;}
+.filter-btn:hover,.filter-btn.active{background:rgba(0,255,136,.1);border-color:var(--green);color:var(--green);}
+
+.podium-section{padding:32px 0;}
+.sec-title{font-family:var(--font);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:24px;display:flex;align-items:center;gap:12px;font-weight:700;}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:14px;flex-wrap:wrap;}
+.pod{flex:1;min-width:195px;max-width:265px;background:var(--card);border-radius:17px;padding:24px 17px 20px;text-align:center;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;cursor:default;border:1px solid var(--border);}
+.pod:hover{transform:translateY(-6px);}
+.pod-1{border:1px solid rgba(255,215,0,.4);box-shadow:0 0 34px rgba(255,215,0,.13),inset 0 0 36px rgba(255,215,0,.03);background:linear-gradient(160deg,#1a1500 0%,#141414 60%);order:2;}
+.pod-1:hover{box-shadow:0 0 52px rgba(255,215,0,.27),0 20px 52px rgba(0,0,0,.6);}
+.pod-2{order:1;border:1px solid rgba(192,192,192,.2);box-shadow:0 0 16px rgba(192,192,192,.06);}
+.pod-2:hover{box-shadow:0 0 34px rgba(192,192,192,.17),0 20px 34px rgba(0,0,0,.5);}
+.pod-3{order:3;border:1px solid rgba(205,127,50,.2);box-shadow:0 0 16px rgba(205,127,50,.06);}
+.pod-3:hover{box-shadow:0 0 34px rgba(205,127,50,.17),0 20px 34px rgba(0,0,0,.5);}
+.pod::before{content:'';position:absolute;inset:0;border-radius:17px;opacity:.35;}
+.pod-1::before{background:radial-gradient(circle at 50% -20%,rgba(255,215,0,.15),transparent 60%);}
+.pod-2::before{background:radial-gradient(circle at 50% -20%,rgba(192,192,192,.1),transparent 60%);}
+.pod-3::before{background:radial-gradient(circle at 50% -20%,rgba(205,127,50,.1),transparent 60%);}
+.crown{font-size:24px;display:block;margin-bottom:3px;animation:cFloat 3s ease-in-out infinite;}
+@keyframes cFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.pod-avatar{width:64px;height:64px;border-radius:50%;margin:0 auto 11px;display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:900;position:relative;z-index:1;}
+.pod-1 .pod-avatar{background:linear-gradient(135deg,#FFD700,#FFA500);color:#000;box-shadow:0 0 17px rgba(255,215,0,.5);}
+.pod-2 .pod-avatar{background:linear-gradient(135deg,#C0C0C0,#888);color:#000;}
+.pod-3 .pod-avatar{background:linear-gradient(135deg,#CD7F32,#8B4513);color:#fff;}
+.pod-rank{position:absolute;top:13px;right:13px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;}
+.pod-1 .pod-rank{background:rgba(255,215,0,.15);color:var(--gold);border:1px solid rgba(255,215,0,.3);}
+.pod-2 .pod-rank{background:rgba(192,192,192,.1);color:var(--silver);border:1px solid rgba(192,192,192,.2);}
+.pod-3 .pod-rank{background:rgba(205,127,50,.1);color:var(--bronze);border:1px solid rgba(205,127,50,.2);}
+.pod-name{font-size:14px;font-weight:700;margin-bottom:4px;position:relative;z-index:1;}
+.pod-1 .pod-name{color:var(--gold);}
+.pod-2 .pod-name{color:var(--silver);}
+.pod-3 .pod-name{color:var(--bronze);}
+.pod-sub{font-size:11px;color:var(--muted);margin-bottom:4px;position:relative;z-index:1;}
+.pod-earn{font-size:16px;font-weight:900;position:relative;z-index:1;}
+.pod-1 .pod-earn{color:var(--gold);}
+.pod-2 .pod-earn{color:var(--silver);}
+.pod-3 .pod-earn{color:var(--bronze);}
+.pod-prog{margin-top:13px;position:relative;z-index:1;}
+.pp-label{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:5px;}
+.pp-bg{height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;}
+.pp-fill{height:100%;border-radius:2px;transition:width 1.5s cubic-bezier(.4,0,.2,1);}
+.pod-1 .pp-fill{background:linear-gradient(90deg,var(--gold2),var(--gold));}
+.pod-2 .pp-fill{background:linear-gradient(90deg,#888,var(--silver));}
+.pod-3 .pp-fill{background:linear-gradient(90deg,#8B4513,var(--bronze));}
+
+/* MAIN TABLE — exact sheet format */
+.table-section{padding:14px 0 40px;}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:17px;overflow:hidden;}
+.tscroll{overflow-x:auto;}
+table.main{width:100%;border-collapse:collapse;font-family:var(--font);min-width:860px;}
+
+table.main thead tr.h1 th{
+  background:#0d1b3e;color:#fff;
+  font-size:12px;font-weight:700;
+  padding:11px 12px;text-align:center;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  letter-spacing:.4px;
+}
+table.main thead tr.h1 th.hname{text-align:left;border-right:1px solid rgba(0,255,136,.2);}
+table.main thead tr.h1 th.dg{border:1px solid rgba(255,255,255,.07);border-bottom:none;}
+
+table.main thead tr.h2 th{
+  background:#0a1530;
+  font-size:10px;font-weight:700;
+  padding:7px 12px;text-align:center;
+  border-bottom:2px solid rgba(0,255,136,.22);
+  letter-spacing:1px;text-transform:uppercase;
+}
+table.main thead tr.h2 th.sub-t{color:#aaa;}
+table.main thead tr.h2 th.sub-a{color:var(--green);}
+
+table.main tbody tr{border-bottom:1px solid rgba(255,255,255,.045);transition:background .2s;}
+table.main tbody tr:last-child{border-bottom:none;}
+table.main tbody tr:hover{background:rgba(255,255,255,.028);}
+table.main tbody tr.you{background:rgba(0,255,136,.05);border-left:2px solid var(--green);}
+table.main tbody tr.tot{background:rgba(255,215,0,.055);border-top:2px solid rgba(255,215,0,.28);}
+
+table.main td{padding:10px 12px;font-size:13px;vertical-align:middle;text-align:center;}
+table.main td.lft{text-align:left;}
+.nm-wrap{display:flex;align-items:center;gap:8px;}
+.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0;}
+.nm{font-weight:700;font-size:13px;}
+.you-tag{font-size:10px;color:var(--green);font-weight:700;}
+.tot-tag{color:var(--gold);font-weight:900;}
+.bk{color:var(--gold);font-weight:900;font-size:14px;}
+.tot .bk{color:var(--gold);}
+.pct{font-weight:900;font-size:13px;}
+.tv{color:#aaa;font-size:12px;font-weight:600;}
+.av-val{font-weight:900;font-size:13px;}
+.av-hit{color:var(--green);}
+.av-warn{color:var(--gold2);}
+.av-miss{color:#ff4455;}
+.tot .tv{color:var(--gold);font-weight:900;font-size:13px;}
+
+.confetti-piece{position:fixed;width:8px;height:8px;top:-10px;animation:cFall linear forwards;z-index:999;pointer-events:none;border-radius:2px;}
+@keyframes cFall{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+
+.cta-section{margin:38px 0;background:linear-gradient(135deg,rgba(0,255,136,.06),rgba(255,215,0,.04));border:1px solid rgba(0,255,136,.15);border-radius:20px;padding:52px 38px;text-align:center;position:relative;overflow:hidden;}
+.cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 50% 100%,rgba(0,255,136,.08),transparent 70%);}
+.cta-section h2{font-size:clamp(19px,4vw,32px);font-weight:900;margin-bottom:9px;position:relative;z-index:1;}
+.cta-section p{color:var(--muted);margin-bottom:26px;font-size:14px;position:relative;z-index:1;}
+.cta-btn{display:inline-block;background:linear-gradient(135deg,var(--green),var(--green2));color:#000;font-family:var(--font);font-weight:900;font-size:13px;letter-spacing:1px;padding:14px 36px;border-radius:10px;border:none;cursor:pointer;transition:transform .2s,box-shadow .2s;position:relative;z-index:1;animation:bPulse 2.5s ease-in-out infinite;}
+@keyframes bPulse{0%,100%{box-shadow:0 0 16px rgba(0,255,136,.4),0 4px 16px rgba(0,0,0,.3);}50%{box-shadow:0 0 34px rgba(0,255,136,.7),0 8px 26px rgba(0,0,0,.4);}}
+.cta-btn:hover{transform:translateY(-3px) scale(1.03);}
+.floaters{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.floater{position:absolute;font-size:20px;opacity:.07;animation:fAround linear infinite;}
+@keyframes fAround{0%{transform:translate(0,0) rotate(0);}50%{transform:translate(-14px,-22px) rotate(180deg);}100%{transform:translate(0,0) rotate(360deg);}}
+.footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:11px;letter-spacing:2px;text-transform:uppercase;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fadeUp .6s ease both;}
+@media(max-width:700px){
+  .podium{flex-direction:column;align-items:center;}
+  .pod{max-width:100%;width:100%;order:unset!important;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .controls{flex-direction:column;}
+  .search-wrap{width:100%;}
+  .cta-section{padding:34px 16px;}
+}
+</style>
+</head>
+<body>
+<div id="particles"></div>
+
+<div class="hero fade-up">
+  <div class="trophy-icon">🏆</div>
+  <h1>March Mahamukabala<br>Leaderboard</h1>
+  <p>Top Performers Dominating the Game</p>
+  <div class="hero-line"></div>
+</div>
+
+<div class="container">
+
+  <section class="stats-section fade-up" style="animation-delay:.1s">
+    <div class="stats-grid">
+      <div class="stat-card gn bt-gn"><div class="stat-icon">📈</div><div class="stat-label">Total Bookings Done</div><div class="stat-value sv-gn" id="c1">0</div><div class="stat-sub">This month</div></div>
+      <div class="stat-card gd bt-gd"><div class="stat-icon">🎯</div><div class="stat-label">Team Achievement</div><div class="stat-value sv-gd" id="c2">0%</div><div class="stat-sub">vs target</div></div>
+      <div class="stat-card gn bt-gn"><div class="stat-icon">🧑‍🤝‍🧑</div><div class="stat-label">Active Closers</div><div class="stat-value sv-gn" id="c3">0</div><div class="stat-sub">In competition</div></div>
+      <div class="stat-card gd bt-gd"><div class="stat-icon">⚡</div><div class="stat-label">Total Target</div><div class="stat-value sv-gd" id="c4">0</div><div class="stat-sub">Bookings target</div></div>
+    </div>
+  </section>
+
+  <div class="controls fade-up" style="animation-delay:.2s">
+    <div class="search-wrap"><span class="s-icon">🔍</span><input type="text" id="srch" placeholder="Search by name..." oninput="filterTbl()"/></div>
+    <div class="filter-btns">
+      <button class="filter-btn active" onclick="setF(this)">Today</button>
+      <button class="filter-btn" onclick="setF(this)">This Week</button>
+      <button class="filter-btn" onclick="setF(this)">This Month</button>
+    </div>
+  </div>
+
+  <section class="podium-section fade-up" style="animation-delay:.3s">
+    <div class="sec-title">Top 3 Champions</div>
+    <div class="podium" id="podium"></div>
+  </section>
+
+  <section class="table-section fade-up" style="animation-delay:.4s">
+    <div class="sec-title">Full Rankings — March 24–27</div>
+    <div class="table-wrap">
+      <div class="tscroll">
+        <table class="main">
+          <thead>
+            <tr class="h1">
+              <th class="hname" rowspan="2">Name</th>
+              <th rowspan="2">Total<br>Bookings</th>
+              <th rowspan="2">% Achievement</th>
+              <th colspan="2" class="dg">24th March</th>
+              <th colspan="2" class="dg">25th March</th>
+              <th colspan="2" class="dg">26th March</th>
+              <th colspan="2" class="dg">27th March</th>
+            </tr>
+            <tr class="h2">
+              <th class="sub-t">Target</th><th class="sub-a">Achieved</th>
+              <th class="sub-t">Target</th><th class="sub-a">Achieved</th>
+              <th class="sub-t">Target</th><th class="sub-a">Achieved</th>
+              <th class="sub-t">Target</th><th class="sub-a">Achieved</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section fade-up" style="animation-delay:.5s">
+    <div class="floaters">
+      <span class="floater" style="left:5%;top:20%;animation-duration:8s;">🏆</span>
+      <span class="floater" style="left:15%;top:60%;animation-duration:11s;">⚡</span>
+      <span class="floater" style="right:8%;top:15%;animation-duration:9s;">💰</span>
+      <span class="floater" style="right:20%;top:65%;animation-duration:13s;">🔥</span>
+      <span class="floater" style="left:50%;top:10%;animation-duration:10s;">🚀</span>
+    </div>
+    <h2>🔥 Want Your Name Here?</h2>
+    <p>Join the elite closers and dominate the leaderboard this month.</p>
+    <button class="cta-btn" onclick="confetti()">🚀 Start Closing Deals</button>
+  </section>
+</div>
+<div class="footer">March Mahamukabala · Leaderboard 2025 · Built for Champions</div>
+
+<script>
+const DATA=[
+  {name:"Ajay Kumar",    total:45,pct:90,  days:[{t:5,a:6},{t:5,a:5},{t:5,a:4},{t:5,a:3}],you:false},
+  {name:"Shriya Kumari", total:38,pct:76,  days:[{t:5,a:4},{t:5,a:4},{t:5,a:3},{t:5,a:2}],you:false},
+  {name:"Chandan Kumar", total:32,pct:64,  days:[{t:5,a:3},{t:5,a:4},{t:5,a:2},{t:5,a:1}],you:false},
+  {name:"Mani Chander",  total:28,pct:56,  days:[{t:5,a:3},{t:5,a:3},{t:5,a:2},{t:5,a:1}],you:true },
+  {name:"Mustafa",       total:25,pct:50,  days:[{t:5,a:2},{t:5,a:3},{t:5,a:2},{t:5,a:1}],you:false},
+  {name:"Monika Agarwal",total:22,pct:44,  days:[{t:5,a:2},{t:5,a:2},{t:5,a:2},{t:5,a:1}],you:false},
+  {name:"Yuvraj P",      total:18,pct:36,  days:[{t:5,a:2},{t:5,a:2},{t:5,a:1},{t:5,a:1}],you:false},
+  {name:"Sanjay Bichoi", total:15,pct:30,  days:[{t:5,a:1},{t:5,a:2},{t:5,a:1},{t:5,a:1}],you:false},
+];
+const TEAM={name:"TEAM TOTAL",total:223,pct:55.8,days:[{t:40,a:23},{t:40,a:25},{t:40,a:17},{t:40,a:11}]};
+
+const avatars=[["#FFD700","#000"],["#C0C0C0","#000"],["#CD7F32","#fff"],["#00FF88","#000"],["#ff6b6b","#fff"],["#667eea","#fff"],["#f093fb","#000"],["#4facfe","#000"]];
+const ini=n=>n.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+const pctClr=p=>p>=76?"#00FF88":p>=50?"#FFA500":"#ff4455";
+const avCls=(a,t)=>a>=t?"av-val av-hit":a>=t*.8?"av-val av-warn":"av-val av-miss";
+
+function buildPodium(){
+  const el=document.getElementById("podium");
+  [1,0,2].forEach((pi,i)=>{
+    const p=DATA[pi];const[bg,fg]=avatars[pi];
+    const cls=["pod pod-2","pod pod-1","pod pod-3"][i];
+    const lbl=["2nd","1st","3rd"][i];
+    const d=document.createElement("div");d.className=cls;
+    d.innerHTML=`${pi===0?'<span class="crown">👑</span>':''}
+      <span class="pod-rank">${lbl}</span>
+      <div class="pod-avatar" style="background:linear-gradient(135deg,${bg},${bg}cc);color:${fg};">${ini(p.name)}</div>
+      <div class="pod-name">${p.name}</div>
+      <div class="pod-sub">${p.total} bookings closed</div>
+      <div class="pod-earn" style="color:${pctClr(p.pct)}">${p.pct}% achieved</div>
+      <div class="pod-prog">
+        <div class="pp-label"><span>Target Progress</span><span>${p.pct}%</span></div>
+        <div class="pp-bg"><div class="pp-fill" data-w="${p.pct}%" style="width:0%"></div></div>
+      </div>`;
+    el.appendChild(d);
+  });
+}
+
+function buildTable(list){
+  const tb=document.getElementById("tbody");
+  let html=list.map(p=>{
+    const oi=DATA.indexOf(p);const[bg,fg]=avatars[oi]||["#333","#fff"];
+    const dc=p.days.map(d=>`<td class="tv">${d.t}</td><td class="${avCls(d.a,d.t)}">${d.a}</td>`).join("");
+    return `<tr class="${p.you?'you':''}">
+      <td class="lft"><div class="nm-wrap">
+        <div class="av" style="background:${bg};color:${fg};">${ini(p.name)}</div>
+        <div><div class="nm">${p.name}</div>${p.you?'<div class="you-tag">● You</div>':''}</div>
+      </div></td>
+      <td class="bk">${p.total}</td>
+      <td class="pct" style="color:${pctClr(p.pct)}">${p.pct.toFixed(2)}%</td>
+      ${dc}</tr>`;
+  }).join("");
+
+  const tc=TEAM.days.map(d=>`<td class="tv" style="color:var(--gold);font-weight:900;">${d.t}</td><td class="${avCls(d.a,d.t)}" style="font-weight:900;">${d.a}</td>`).join("");
+  html+=`<tr class="tot">
+    <td class="lft"><div class="nm-wrap">
+      <div class="av" style="background:rgba(255,215,0,.18);color:var(--gold);">TT</div>
+      <div class="tot-tag">TEAM TOTAL</div>
+    </div></td>
+    <td class="bk">${TEAM.total}</td>
+    <td class="pct" style="color:var(--gold)">${TEAM.pct.toFixed(2)}%</td>
+    ${tc}</tr>`;
+
+  tb.innerHTML=html;
+  setTimeout(()=>document.querySelectorAll("[data-w]").forEach(e=>e.style.width=e.getAttribute("data-w")),100);
+}
+
+function filterTbl(){
+  const q=document.getElementById("srch").value.toLowerCase();
+  buildTable(DATA.filter(p=>p.name.toLowerCase().includes(q)));
+}
+function setF(btn){document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");}
+
+function confetti(){
+  const c=["#FFD700","#00FF88","#ff6b6b","#667eea","#fff","#f093fb","#FFA500"];
+  for(let i=0;i<90;i++){const el=document.createElement("div");el.className="confetti-piece";el.style.cssText=`left:${Math.random()*100}vw;background:${c[i%c.length]};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.8}s;width:${5+Math.random()*8}px;height:${5+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'2px'};`;document.body.appendChild(el);setTimeout(()=>el.remove(),4000);}
+}
+
+function particles(){
+  const c=document.getElementById("particles");
+  for(let i=0;i<20;i++){const p=document.createElement("div");p.className="particle";const s=2+Math.random()*3;p.style.cssText=`width:${s}px;height:${s}px;background:${Math.random()>.5?"rgba(0,255,136,.6)":"rgba(255,215,0,.5)"};left:${Math.random()*100}%;animation-duration:${8+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;c.appendChild(p);}
+}
+
+function animCtr(id,target,pre,suf,dur,dec){
+  const el=document.getElementById(id);const t0=Date.now();
+  const tick=()=>{const p=Math.min((Date.now()-t0)/dur,1);const e=1-Math.pow(1-p,3);const v=e*target;el.textContent=pre+(dec?v.toFixed(dec):Math.round(v))+suf;if(p<1)requestAnimationFrame(tick);};
+  requestAnimationFrame(tick);
+}
+
+particles();buildPodium();buildTable(DATA);
+setTimeout(()=>{
+  animCtr("c1",223,"","",1200,0);
+  animCtr("c2",55.8,"","%",1300,1);
+  animCtr("c3",8,"","",900,0);
+  animCtr("c4",160,"","",1100,0);
+  confetti();
+},400);
+</script>
+</body>
+</html>
